@@ -21,22 +21,6 @@ on:
          description: 'Upload path'
          required: true
          default: 'PixelExperience'
-       muse:
-         description: 'Upload ROM to MuseTransfer'
-         required: true
-         default: 'true'
-       we:
-         description: 'Upload ROM to WeTransfer'
-         required: true
-         default: 'true'
-       wss:
-         description: 'Upload ROM to Wenshushu'
-         required: true
-         default: 'false'
-       anon:
-         description: 'Upload ROM to Anonfile'
-         required: true
-         default: 'true'
        sf:
          description: 'Upload ROM to Sourceforge'
          required: true
@@ -85,8 +69,8 @@ jobs:
           echo "FILENAME: $FILENAME"
           FILENAME=$(basename ${FILENAME})
           NAME=$(basename $FILENAME .zip)
-          echo "::set-output name=filename::$FILENAME"
-          echo "::set-output name=name::$NAME"
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
           MD5SUM=$(md5sum $FILENAME | cut -d' ' -f1)
           SHA1SUM=$(sha1sum $FILENAME | cut -d' ' -f1)
           SHA256SUM=$(sha256sum $FILENAME | cut -d' ' -f1)
@@ -94,57 +78,14 @@ jobs:
           echo "SHA1SUM: $SHA1SUM"
           echo "SHA256SUM: $SHA256SUM"
 
-      - id: muse
-        name: Upload to MuseTransfer
-        if: github.event.inputs.muse == 'true'
-        continue-on-error: true
-        timeout-minutes: 5
-        run: |
-          echo "Upload to MuseTransfer"
-          ls -al
-          curl -fsSL git.io/file-transfer | sh
-          musetrans=$(./transfer muse -s -p 12 --no-progress ${{ steps.var.outputs.filename }})
-          musetrans=$(echo $musetrans | grep -o -E "https[^ ]*")
-          echo "MuseTransfer: $musetrans"
-    
-      - id: we
-        name: Upload to WeTransfer
-        if: github.event.inputs.we == 'true'
-        continue-on-error: true
-        timeout-minutes: 5
-        run: |
-          echo "Upload to WeTransfer"
-          ls -al
-          curl -fsSL git.io/file-transfer | sh
-          wetrans=$(./transfer wet -s -p 12 --no-progress ${{ steps.var.outputs.filename }})
-          wetrans=$(echo $wetrans | grep -o -E "https[^ ]*")
-          echo "WeTransfer: $wetrans"
-
-      - id: wss
-        name: Upload to Wenshushu
-        if: github.event.inputs.wss == 'true'
-        continue-on-error: true
-        timeout-minutes: 5
-        run: |
-          echo "Upload to Wenshushu"
-          ls -al
-          curl -fsSL git.io/file-transfer | sh
-          wsstrans=$(./transfer wss --no-progress ${{ steps.var.outputs.filename }})
-          wsstrans=$(echo $wsstrans | grep -o -E "https[^ ]*")
-          echo "Wenshushu: $wsstrans"
-
-      - id: anon
-        name: Upload to Anonfile
-        if: github.event.inputs.anon == 'true'
-        continue-on-error: true
-        timeout-minutes: 5
-        run: |
-          echo "Upload to Anonfile"
-          ls -al
-          curl -fsSL git.io/file-transfer | sh
-          anontrans=$(./transfer anon --no-progress ${{ steps.var.outputs.filename }})
-          anontrans=$(echo $anontrans | grep -o -E "https[^ ]*")
-          echo "Anonfile: $anontrans"
+      - name: Upload ROM to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.var.outputs.filename }}
+          name: ${{ steps.var.outputs.name }}
+          tag_name: ${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE }}
 
       - name: Upload to Sourceforge
         if: github.event.inputs.sf == 'true'
