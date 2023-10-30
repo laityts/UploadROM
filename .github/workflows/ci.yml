@@ -21,10 +21,14 @@ on:
          description: 'Upload path'
          required: true
          default: 'PixelExperience'
+       re:
+         description: 'Upload ROM to Release'
+         required: true
+         default: 'false'
        sf:
          description: 'Upload ROM to Sourceforge'
          required: true
-         default: 'false'
+         default: 'true'
 
 jobs:
   UploadROM:
@@ -79,6 +83,7 @@ jobs:
           echo "SHA256SUM: $SHA256SUM"
 
       - name: Upload ROM to Release
+        if: github.event.inputs.re == 'true'
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ steps.var.outputs.filename }}
