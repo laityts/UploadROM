@@ -82,6 +82,13 @@ jobs:
           echo "SHA1SUM: $SHA1SUM"
           echo "SHA256SUM: $SHA256SUM"
 
+      - name: Upload ROM to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.var.outputs.name }}
+          path: ${{ steps.var.outputs.filename }}
+          retention-days: 7
+
       - name: Upload ROM to Release
         if: github.event.inputs.re == 'true'
         uses: softprops/action-gh-release@v1
