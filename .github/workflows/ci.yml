@@ -20,7 +20,7 @@ on:
        rom:
          description: 'Upload path'
          required: true
-         default: 'PixelExperience'
+         default: 'MIUI'
        re:
          description: 'Upload ROM to Release'
          required: true
@@ -99,9 +99,9 @@ jobs:
         run: |
           echo "Upload to Sourceforge"
           ls -al
-          sshpass -p "${{ secrets.PASSWD }}" scp -o StrictHostKeyChecking=no -o ConnectTimeout=180 ${{ steps.var.outputs.filename }} laityts@frs.sourceforge.net:/home/frs/project/tiffany/${{ github.event.inputs.rom }}/${{ steps.var.outputs.filename }}
-          echo "Download Link: https://sourceforge.net/projects/tiffany/files/${{ github.event.inputs.rom }}/${{ steps.var.outputs.filename }}/download"
-          SFLINK="https://sourceforge.net/projects/tiffany/files/${{ github.event.inputs.rom }}/${{ steps.var.outputs.filename }}/download"
+          sshpass -p "${{ secrets.PASSWD }}" scp -o StrictHostKeyChecking=no -o ConnectTimeout=180 ${{ steps.var.outputs.filename }} laityts@frs.sourceforge.net:/home/frs/project/eytan/${{ github.event.inputs.rom }}/${{ steps.var.outputs.filename }}
+          echo "Download Link: https://sourceforge.net/projects/eytan/files/${{ github.event.inputs.rom }}/${{ steps.var.outputs.filename }}/download"
+          SFLINK="https://sourceforge.net/projects/eytan/files/${{ github.event.inputs.rom }}/${{ steps.var.outputs.filename }}/download"
           echo "Sourceforge: $SFLINK"
 
 
